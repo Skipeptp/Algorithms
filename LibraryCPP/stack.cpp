@@ -1,34 +1,41 @@
 #include "stack.h"
+#include "list.h"
+#include <stdexcept>
 
 struct Stack
 {
+    List *internalList = nullptr;
 };
 
 Stack *stack_create()
 {
-    return new Stack;
+    Stack *stackInstance = new Stack;
+    stackInstance->internalList = list_create();
+    return stackInstance;
 }
 
 void stack_delete(Stack *stack)
 {
-    // TODO: free stack elements
+    list_delete(stack->internalList);
     delete stack;
 }
 
 void stack_push(Stack *stack, Data data)
 {
+    list_insert(stack->internalList, data);
 }
 
 Data stack_get(const Stack *stack)
 {
-    return (Data)0;
+    return list_item_data(list_first(stack->internalList));
 }
 
 void stack_pop(Stack *stack)
 {
+    (void)list_erase_first(stack->internalList);
 }
 
 bool stack_empty(const Stack *stack)
 {
-    return true;
+    return (list_first(stack->internalList) == nullptr);
 }
