@@ -10,44 +10,39 @@ bool is_matching(const string &opening, const string &closing) {
 }
 
 int main(int argc, char** argv) {
-    
     if (argc < 2) {
         cerr << "Usage: " << argv[0] << " <input_file>" << endl;
         return 1;
     }
 
-    
     ifstream input(argv[1]);
     if (!input.is_open()) {
         cerr << "Error opening file: " << argv[1] << endl;
         return 1;
     }
 
-    
     Stack *stack = stack_create();
     string line;
+    bool flag = false;
 
-    
     while (getline(input, line)) {
         if (!line.empty() && line.front() == '<' && line.back() == '>') {
-            if (line[1] == '/') { 
+            if (line[1] == '/') {
                 if (stack_empty(stack)) {
-                    cout << "NO" << endl;
-                    stack_delete(stack);
-                    return 0;
+                    flag = true;
+                    break;
                 }
 
                 
                 string *top_tag = static_cast<string*>(stack_get(stack));
                 if (!is_matching(*top_tag, line)) {
-                    cout << "NO" << endl;
+                    flag = true;
                     delete top_tag;
-                    stack_delete(stack);
-                    return 0;
+                    break;
                 }
                 delete top_tag;
                 stack_pop(stack);
-            } else { 
+            } else {
                 string *tag = new string(line);
                 stack_push(stack, static_cast<Data>(tag));
             }
@@ -55,12 +50,11 @@ int main(int argc, char** argv) {
     }
 
     
-    if (!stack_empty(stack)) {
+    if (flag || !stack_empty(stack)) {
         cout << "NO" << endl;
     } else {
         cout << "YES" << endl;
     }
-
 
     stack_delete(stack);
     return 0;
