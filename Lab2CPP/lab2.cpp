@@ -4,7 +4,7 @@
 
 using namespace std;
 
-int main(int argc, char** argv){
+int main(__attribute__((unused)) int argc, char** argv){
     ifstream input(argv[1]);
     Stack *stack = stack_create();
     string perrem;
