@@ -16,8 +16,9 @@ Stack *stack_create()
 
 void stack_delete(Stack *stack)
 {
-    list_delete(stack->internalList);
+   list_delete(stack->internalList);
     delete stack;
+    
 }
 
 void stack_push(Stack *stack, Data data)
