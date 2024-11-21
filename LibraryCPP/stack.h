@@ -1,5 +1,7 @@
 #ifndef STACK_H
 #define STACK_H
+#include <string>
+
 
 // Stack
 // Stores integer values inside
