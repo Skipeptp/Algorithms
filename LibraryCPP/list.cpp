@@ -15,10 +15,12 @@ struct List
     ListItem *head = nullptr;
 };
 
-List *list_create()
-{
-    
+List *list_create(){
+     List *newList = new List;
+    newList->head = nullptr;
+    return newList;
 }
+
 
 void list_delete(List *list)
 {
