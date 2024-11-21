@@ -3,7 +3,7 @@
 
 // Stack
 // Stores integer values inside
-typedef int Data;
+typedef std::string Data;
 
 struct Stack;
 
