@@ -4,45 +4,37 @@
 
 using namespace std;
 
-int main(__attribute__((unused)) int argc, char** argv){
+int main(int argc, char** argv) {
+    if (argc < 2) {
+        cerr << "Файл ввода не предоставлен." << endl;
+        return 1;
+    }
+
     ifstream input(argv[1]);
     Stack *stack = stack_create();
-    string perrem;
+    string tag;
     int index = 0;
-    while(input.eof() == 0){
-        input >> perrem;
-        if(perrem[1] != '/'){
-            for(char c: perrem){
-                stack_push(stack, c);
+
+    while (input >> tag) {
+        if (tag[0] == '<' && tag[tag.size() - 2] != '/') {
+            stack_push(stack, tag);
+        } else if (tag[0] == '<' && tag[1] == '/') {
+            if (stack_empty(stack)) {
+                index++;
+                break;
             }
-        } else {
-            int i = 0;
-            while(true){
-                char c = stack_get(stack);
-                stack_pop(stack);
-                if(c == '<'){
-                    break;
-                } else if (perrem[perrem.size()-1-i] == '/'){
-                    i++;
-                    if(c == perrem[perrem.size()-1-i]){
-                        break;  
-                    } else {
-                        index++;
-                        break;
-                    }
-                } else if(c != perrem[perrem.size()-1-i]){
-                    index++;
-                    break;
-                } else {
-                    i++;
-                }
+            string openingTag = stack_get(stack);
+            stack_pop(stack);
+            string expectedClosingTag = "</" + openingTag.substr(1);
+            if (tag != expectedClosingTag) {
+                index++;
+                break;
             }
-            i = 0;
         }
     }
-    cout << (index ? "NO" : "YES");
 
+    cout << (index ? "NO" : "YES") << endl;
 
-stack_delete(stack);
-return 0;           
+    stack_delete(stack);
+    return 0;
 }
