@@ -1,40 +1,61 @@
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include "stack.h"
 
 using namespace std;
 
 int main(int argc, char** argv) {
     if (argc < 2) {
-        cerr << "Файл ввода не предоставлен." << endl;
         return 1;
     }
 
-    ifstream input(argv[1]);
-    Stack *stack = stack_create();
-    string tag;
-    int index = 0;
+    ifstream inputFile(argv[1]);
+    if (!inputFile.is_open()) {
+        cerr << "Ошибка при открытии файла: " << argv[1] << endl;
+        return 1;
+    }
 
-    while (input >> tag) {
-        if (tag[0] == '<' && tag[tag.size() - 2] != '/') {
-            stack_push(stack, tag);
-        } else if (tag[0] == '<' && tag[1] == '/') {
-            if (stack_empty(stack)) {
-                index++;
-                break;
+    Stack *tagStack = stack_create();
+    string currentLine;
+    bool isValid = true;
+
+    while (getline(inputFile, currentLine)) {
+        if (currentLine[1] == '/') {
+            int index = 0;
+            while (true) {
+                if (stack_is_empty(tagStack)) {
+                    isValid = false;
+                    break;
+                }
+                char topChar = stack_get(tagStack);
+                stack_pop(tagStack);
+                
+                if (topChar == '<') {
+                    break;
+                } else if (currentLine[currentLine.size() - 1 - index] == '/') {
+                    index++;
+                    if (topChar == currentLine[currentLine.size() - 1 - index]) {
+                        break;  
+                    } else {
+                        isValid = false;
+                        break;
+                    }
+                } else if (topChar != currentLine[currentLine.size() - 1 - index]) {
+                    isValid = false;
+                    break;
+                } else {
+                    index++;
+                }
             }
-            string openingTag = stack_get(stack);
-            stack_pop(stack);
-            string expectedClosingTag = "</" + openingTag.substr(1);
-            if (tag != expectedClosingTag) {
-                index++;
-                break;
+        } else {
+            for (char c : currentLine) {
+                stack_push(tagStack, c);
             }
         }
     }
 
-    cout << (index ? "NO" : "YES") << endl;
+    cout << (isValid ? "YES" : "NO") << endl;
 
-    stack_delete(stack);
-    return 0;
+    stack_delete(tagStack);
+    return 0;           
 }
